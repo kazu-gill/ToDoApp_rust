@@ -378,12 +378,22 @@ fn main() -> Result<(), eframe::Error> {
         options,
         Box::new(|cc| {
             let mut fonts = egui::FontDefinitions::default();
+
+            // システムフォントを直接読み込む
             fonts.font_data.insert(
-                "japanese".to_owned(),
-                egui::FontData::from_static(include_bytes!("/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc")).into(),
+                "msgothic".to_owned(),
+                egui::FontData::from_static(include_bytes!("C:\\Windows\\Fonts\\msgothic.ttc")).into(),
             );
-            fonts.families.get_mut(&egui::FontFamily::Proportional).unwrap()
-                .insert(0, "japanese".to_owned());
+
+            // フォントファミリーの設定
+            if let Some(family) = fonts.families.get_mut(&egui::FontFamily::Proportional) {
+                family.insert(0, "msgothic".to_owned());
+            }
+
+            if let Some(family) = fonts.families.get_mut(&egui::FontFamily::Monospace) {
+                family.push("msgothic".to_owned());
+            }
+
             cc.egui_ctx.set_fonts(fonts);
             Ok(Box::new(TodoApp::new()))
         }),
