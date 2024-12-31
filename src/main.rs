@@ -379,19 +379,39 @@ fn main() -> Result<(), eframe::Error> {
         Box::new(|cc| {
             let mut fonts = egui::FontDefinitions::default();
 
-            // システムフォントを直接読み込む
-            fonts.font_data.insert(
-                "msgothic".to_owned(),
-                egui::FontData::from_static(include_bytes!("C:\\Windows\\Fonts\\msgothic.ttc")).into(),
-            );
+            // OSに応じたフォント設定
+            #[cfg(target_os = "windows")]
+            {
+                fonts.font_data.insert(
+                    "system_font".to_owned(),
+                    egui::FontData::from_static(include_bytes!("C:\\Windows\\Fonts\\msgothic.ttc")).into(),
+                );
+            }
+
+            #[cfg(target_os = "macos")]
+            {
+                fonts.font_data.insert(
+                    "system_font".to_owned(),
+                    egui::FontData::from_static(include_bytes!("/System/Library/Fonts/ヒラギノ角ゴシック W3.ttc")).into(),
+                );
+            }
+
+            #[cfg(target_os = "linux")]
+            {
+                // Linuxの場合は通常、Noto Sans CJK JPなどが/usr/share/fontsにある
+                fonts.font_data.insert(
+                    "system_font".to_owned(),
+                    egui::FontData::from_static(include_bytes!("/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc")).into(),
+                );
+            }
 
             // フォントファミリーの設定
             if let Some(family) = fonts.families.get_mut(&egui::FontFamily::Proportional) {
-                family.insert(0, "msgothic".to_owned());
+                family.insert(0, "system_font".to_owned());
             }
 
             if let Some(family) = fonts.families.get_mut(&egui::FontFamily::Monospace) {
-                family.push("msgothic".to_owned());
+                family.push("system_font".to_owned());
             }
 
             cc.egui_ctx.set_fonts(fonts);
