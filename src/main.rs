@@ -1,3 +1,6 @@
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // releaseビルドでのみ適用
+// #![windows_subsystem = "windows"] // 常に適用する場合はこちらを使用
+
 use eframe::egui;
 use serde::{Deserialize, Serialize};
 use std::fs;
